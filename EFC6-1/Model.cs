@@ -36,6 +36,9 @@ namespace EFC6_1
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TeamWorker>().HasKey(p => new { p.TeamId, p.WorkerId });
+
+            modelBuilder.Entity<Team>().HasOne(team => team.CurrentTask);
+            modelBuilder.Entity<Worker>().HasOne(worker => worker.CurrentTodo);
         }
     }
 
