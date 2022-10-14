@@ -12,9 +12,55 @@ namespace EFC6_1
         {
 
             //SeedTasks();
-            SeedWorkers();
+            //SeedWorkers();
+            //SeedTeamWithoutTask();
             //PrintAllTasks();
             //PrintIncompleteTasksAndTodos();
+            //PrintTeamsWithoutTasks();
+            //PrintTeamCurrentTask();
+            PrintTeamProgress();
+        }
+        private static void PrintTeamProgress()
+        {
+
+        }
+        private static void SeedTeamWithoutTask()
+        {
+            using (ProjektManagerContext context = new())
+            {
+                context.Add(new Team { Name = "NoTasksTeam"});
+                context.SaveChanges();
+            }
+        }
+        private static void PrintTeamCurrentTask()
+        {
+            using (ProjektManagerContext context = new())
+            {
+                var teams = context.Teams.Include(team => team.CurrentTask);
+                foreach (var team in teams)
+                {
+                    string currentTask = "";
+                    if (team.CurrentTask != null)
+                        currentTask = team.CurrentTask.Name;
+                    else
+                        currentTask = "No task!";
+
+                    Console.WriteLine($"Team: {team.Name} \t Task: {currentTask}");
+                }
+                Console.ReadLine();
+            }
+        }
+        private static void PrintTeamsWithoutTasks()
+        {
+            using (ProjektManagerContext context = new())
+            {
+                var teams = context.Teams.Include(team => team.CurrentTask).Where(team => team.CurrentTask == null);
+                foreach (var team in teams)
+                {
+                    Console.WriteLine($"This team needs to work!!!: {team.Name}");
+                }
+                Console.ReadLine();
+            }
         }
         private static void SeedWorkers()
         {
