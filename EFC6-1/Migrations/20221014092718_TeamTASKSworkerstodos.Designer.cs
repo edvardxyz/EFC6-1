@@ -3,6 +3,7 @@ using System;
 using EFC6_1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFC6_1.Migrations
 {
     [DbContext(typeof(ProjektManagerContext))]
-    partial class BloggingContextModelSnapshot : ModelSnapshot
+    [Migration("20221014092718_TeamTASKSworkerstodos")]
+    partial class TeamTASKSworkerstodos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
@@ -82,7 +84,7 @@ namespace EFC6_1.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TaskId")
+                    b.Property<int>("TaskId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("WorkerId")
@@ -168,13 +170,17 @@ namespace EFC6_1.Migrations
 
             modelBuilder.Entity("EFC6_1.Todo", b =>
                 {
-                    b.HasOne("EFC6_1.Task", null)
+                    b.HasOne("EFC6_1.Task", "Task")
                         .WithMany("Todos")
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EFC6_1.Worker", null)
                         .WithMany("Todos")
                         .HasForeignKey("WorkerId");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("EFC6_1.Worker", b =>

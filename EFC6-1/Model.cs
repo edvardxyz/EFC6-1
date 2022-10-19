@@ -53,8 +53,6 @@ namespace EFC6_1
         public int TodoId { get; set; }
         public string? Name { get; set; }
         public bool IsComplete { get; set; }
-        public int TaskId { get; set; }
-        public Task? Task { get; set; }
     }
 
     public class Team
@@ -63,6 +61,7 @@ namespace EFC6_1
         public string? Name { get; set; }
         public List<Worker>? Workers { get; set; }
         public Task? CurrentTask { get; set; }
+        public List<Task>? Tasks { get; set; }
     }
     public class Worker
     {
@@ -70,6 +69,7 @@ namespace EFC6_1
         public string? Name { get; set; }
         public List<Team>? Teams { get; set; }
         public Todo? CurrentTodo { get; set; }
+        public List<Todo>? Todos { get; set; }
 
     }
     public class TeamWorker

@@ -20,9 +20,53 @@ namespace EFC6_1
             //PrintTeamCurrentTask();
             PrintTeamProgress();
         }
+        private static void PrintIncompleteTasksAndTodos()
+        {
+            using (ProjektManagerContext context = new())
+            {
+                var tasks = context.Tasks.
+                    Include(task => task.Todos).
+                    Where(task => task.Todos.Any(todo => todo.IsComplete == false ));
+
+                foreach (var task in tasks)
+                {
+                    Console.WriteLine($"Task: {task.Name}");
+                    foreach (var todo in task.Todos)
+                    {
+                        Console.WriteLine($"-- {todo.Name}");
+                    }
+                }
+            }
+        }
         private static void PrintTeamProgress()
         {
+            using (ProjektManagerContext db = new())
+            {
+                var tasks = db.Tasks.Include(t => t.Todos);
+                var teams = db.Teams.Include(t => t.CurrentTask).Include(t => t.CurrentTask.Todos);
 
+                foreach (var team in teams)
+                {
+                    if (team.CurrentTask == null)
+                    {
+                        Console.Write($"Team: {team.Name}: NO TASK!! :O");
+                        continue;
+                    }
+                    Console.Write($"Team: {team.Name}: ");
+                    float done_counter = 0;
+                    float total = team.CurrentTask.Todos.Count;
+                    foreach (var todo in team.CurrentTask.Todos)
+                    {
+                        if (todo.IsComplete)
+                        {
+                            done_counter++;
+                        }
+                    }
+                    Console.WriteLine($"{done_counter / total * 100.0} %");
+                }
+
+                Console.ReadLine();
+            }
         }
         private static void SeedTeamWithoutTask()
         {
@@ -74,9 +118,7 @@ namespace EFC6_1
                 Todo todo1_2 = new Todo { Name = "Compile source", IsComplete = false };
                 Todo todo1_3 = new Todo { Name = "Test program", IsComplete = false };
 
-                task1.Todos.Add(todo1_1);
-                task1.Todos.Add(todo1_2);
-                task1.Todos.Add(todo1_3);
+                task1.Todos.AddRange(new List<Todo> { todo1_1, todo1_2, todo1_3 });
 
 
                 AddWorker(context, teamf, "Steen Secher", todo1_1);
@@ -87,7 +129,7 @@ namespace EFC6_1
                 Task task2 = new Task { Name = "Brew coffee"};
                 Team teamb = new Team { Name = "Backend", CurrentTask = task2 };
                 context.Add(task2);
-                Todo todo2_1 = new Todo { Name = "Pour water", IsComplete = false };
+                Todo todo2_1 = new Todo { Name = "Pour water", IsComplete = true };
                 Todo todo2_2 = new Todo { Name = "Pour coffee", IsComplete = false };
                 Todo todo2_3 = new Todo { Name = "Turn on", IsComplete = false };
                 task2.Todos.Add(todo2_1);
@@ -101,9 +143,9 @@ namespace EFC6_1
                 // Task 3
                 Task task3 = new Task { Name = "Create ORM" };
                 Team teamt = new Team { Name = "Testere", CurrentTask = task3 };
-                Todo todo3_1 = new Todo { Name = "Code code", IsComplete = false };
-                Todo todo3_2 = new Todo { Name = "Compile the code", IsComplete = false };
-                Todo todo3_3 = new Todo { Name = "Test ORM", IsComplete = false };
+                Todo todo3_1 = new Todo { Name = "Code code", IsComplete = true };
+                Todo todo3_2 = new Todo { Name = "Compile the code", IsComplete = true };
+                Todo todo3_3 = new Todo { Name = "Test ORM", IsComplete = true };
 
                 context.Add(task3);
                 task3.Todos.AddRange(new List<Todo> { todo3_1, todo3_2, todo3_3 });
@@ -122,31 +164,6 @@ namespace EFC6_1
                 Team = team,
                 Worker = new Worker { Name = worker, CurrentTodo = todo }
             });
-        }
-        private static void PrintIncompleteTasksAndTodos()
-
-        {
-            using (ProjektManagerContext context = new())
-            {
-                var tasks = context.Tasks.Include(task => task.Todos).Where(task => task.Todos.Any(todo => todo.IsComplete == false));
-                foreach (var task in tasks)
-                {
-                    Console.WriteLine($"Task: {task.Name}");
-                    foreach (var todo in task.Todos)
-                    {
-                        Console.WriteLine($"-- {todo.Name}");
-                    }
-                }
-            }
-
-        }
-        private static void SeedTasks()
-        {
-            using var db = new ProjektManagerContext();
-
-
-
-            db.SaveChanges();
         }
         // Opgave 2.1
         private static void PrintAllTasks()
